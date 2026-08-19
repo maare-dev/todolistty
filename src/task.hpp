@@ -10,9 +10,8 @@ struct Task{
 };
 
 class TaskManager{
-    private:
-        std::vector<Task> tasks;
     public:
+        std::vector<Task> tasks;
         bool saveTasks(std::string path){
             std::ofstream out_file(path);
 

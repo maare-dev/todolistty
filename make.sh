@@ -12,6 +12,9 @@ flags=(
     "-g"
 )
 libs=(
+    -lftxui-component
+    -lftxui-dom
+    -lftxui-screen
 )
 oname='proj_0.0.1'
 
