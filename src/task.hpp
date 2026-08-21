@@ -10,6 +10,19 @@ struct Task{
 };
 
 class TaskManager{
+    private:
+        void cleanString(std::string &s){
+            std::string to_find = "\n";
+            std::string to_replace = " \\ ";
+
+            size_t pos = 0;
+            while ((pos = s.find(to_find, pos)) != std::string::npos) {
+                s.replace(pos, to_find.length(), to_replace);
+
+                // Move index past the replacement to avoid infinite loops
+                pos += to_replace.length();
+            }
+        }
     public:
         std::vector<Task> tasks;
         bool saveTasks(std::string path){
@@ -17,7 +30,11 @@ class TaskManager{
 
             if (!out_file.is_open()) return false;
 
-            for (const auto& task : tasks){
+            out_file.clear();
+
+            for (auto& task : tasks){
+                cleanString(task.name);
+                cleanString(task.description);
                 out_file << task.name << "\n";
                 out_file << task.description << "\n";
             }

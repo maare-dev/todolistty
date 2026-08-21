@@ -5,9 +5,7 @@
 
 int main() {
     TaskManager tm;
-    tm.tasks.push_back({"first", "this is first test task"});
-    tm.tasks.push_back({"second", "this is second test task"});
-    tm.tasks.push_back({"third", "this is third test task"});
+    tm.loadTasks("tasks.txt");
 
     std::vector<std::string> menu_items;
     std::vector<std::string> contents;
@@ -33,9 +31,23 @@ int main() {
         current_scene = 1;
     });
 
+    auto btn_remove_task = ftxui::Button("remove task", [&] {
+        if (tm.tasks.empty()) return;
+        tm.tasks.erase(tm.tasks.begin() + selected_index);
+        tm.saveTasks("tasks.txt");
+        tm.loadTasks("tasks.txt");
+
+        menu_items.clear();
+        contents.clear();
+        for (const Task &t : tm.tasks){
+            menu_items.push_back(t.name);
+            contents.push_back(t.description);
+        }
+    });
+
     // Контейнер для левой панели (кнопка + меню)
     auto left_panel = ftxui::Container::Vertical({
-        btn_go_to_add,
+        ftxui::Container::Horizontal({btn_go_to_add | ftxui::flex, btn_remove_task | ftxui::flex}),
         menu
     });
 
@@ -66,15 +78,19 @@ int main() {
     // Кнопка сохранения нового элемента
     auto btn_save = ftxui::Button("save and return", [&] {
         if (!input_name.empty()) {
-            // Синхронизируем с вашим TaskManager (при необходимости)
-            tm.tasks.push_back({input_name, input_description});
-
-            // Добавляем данные в векторы интерфейса
-            menu_items.push_back(input_name);
-            contents.push_back(input_description.empty() ? "<empty>" : input_description);
+            tm.tasks.push_back({input_name, input_description.empty() ? "<empty>" : input_description});
 
             // Выбираем только что добавленный элемент
             selected_index = menu_items.size() - 1;
+            tm.saveTasks("tasks.txt");
+            tm.loadTasks("tasks.txt");
+
+            menu_items.clear();
+            contents.clear();
+            for (const Task &t : tm.tasks){
+                menu_items.push_back(t.name);
+                contents.push_back(t.description);
+            }
         }
         current_scene = 0; // Возвращаемся на главный экран
     });
