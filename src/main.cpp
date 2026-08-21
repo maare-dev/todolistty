@@ -45,7 +45,6 @@ int main() {
         }
     });
 
-    // Контейнер для левой панели (кнопка + меню)
     auto left_panel = ftxui::Container::Vertical({
         ftxui::Container::Horizontal({btn_go_to_add | ftxui::flex, btn_remove_task | ftxui::flex}),
         menu
@@ -60,7 +59,6 @@ int main() {
         }
 
         return ftxui::hbox({
-            // ИСПРАВЛЕНО: Рендерим весь left_panel, а не только menu
             window(ftxui::text(" tasks "), left_panel->Render()) | ftxui::flex,
 
             ftxui::separator(),
@@ -75,12 +73,10 @@ int main() {
     auto input_title_comp = ftxui::Input(&input_name, "task name");
     auto input_content_comp = ftxui::Input(&input_description, "task description");
 
-    // Кнопка сохранения нового элемента
     auto btn_save = ftxui::Button("save and return", [&] {
         if (!input_name.empty()) {
             tm.tasks.push_back({input_name, input_description.empty() ? "<empty>" : input_description});
 
-            // Выбираем только что добавленный элемент
             selected_index = menu_items.size() - 1;
             tm.saveTasks("tasks.txt");
             tm.loadTasks("tasks.txt");
@@ -92,22 +88,19 @@ int main() {
                 contents.push_back(t.description);
             }
         }
-        current_scene = 0; // Возвращаемся на главный экран
+        current_scene = 0;
     });
 
-    // Кнопка отмены
     auto btn_cancel = ftxui::Button("cancel", [&] {
-        current_scene = 0; // Просто возвращаемся назад
+        current_scene = 0;
     });
 
-    // Собираем все интерактивные элементы сцены 1 в контейнер
     auto add_form_container = ftxui::Container::Vertical({
         input_title_comp,
         input_content_comp,
-        ftxui::Container::Horizontal({btn_save, btn_cancel}) // Кнопки в один ряд
+        ftxui::Container::Horizontal({btn_save, btn_cancel})
     });
 
-    // Рендерим внешний вид сцены 1
     auto scene_add = ftxui::CatchEvent(ftxui::Renderer(add_form_container, [&] {
         return ftxui::center(
             ftxui::window(ftxui::text(" adding new task "),
@@ -119,8 +112,6 @@ int main() {
                     input_content_comp->Render() | ftxui::border | ftxui::size(ftxui::WIDTH, ftxui::EQUAL, 60),
                     ftxui::vbox(),
 
-                    // ИСПРАВЛЕНО: Рендерим горизонтальный контейнер, где лежат кнопки.
-                    // FTXUI сам корректно отрисует их текст и добавит фокус!
                     add_form_container->ChildAt(2)->Render()
                 })
             )
@@ -135,7 +126,6 @@ int main() {
     // ==========================================
     auto main_tabs = ftxui::Container::Tab({scene_main, scene_add}, &current_scene);
 
-    // Запускаем приложение с главным контейнером вкладок
     screen.Loop(main_tabs);
 
     return 0;
