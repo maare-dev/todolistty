@@ -45,8 +45,14 @@ int main() {
         }
     });
 
+    auto btn_account = ftxui::Button("my account", [&] {current_scene = 2;});
+
     auto left_panel = ftxui::Container::Vertical({
-        ftxui::Container::Horizontal({btn_go_to_add | ftxui::flex, btn_remove_task | ftxui::flex}),
+        ftxui::Container::Horizontal({
+            btn_go_to_add | ftxui::flex,
+            btn_remove_task | ftxui::flex,
+            btn_account | ftxui::flex
+        }),
         menu
     });
 
@@ -122,9 +128,16 @@ int main() {
 
 
     // ==========================================
+    // СЦЕНА 2: АККАУНТ
+    // ==========================================
+
+    auto btn_back = ftxui::Button("back", [&] {current_scene = 0;});
+
+    auto scene_account = ftxui::Renderer(btn_back, [&] {return btn_back->Render();});
+    // ==========================================
     // МЕНЕДЖЕР СЦЕН (Tab)
     // ==========================================
-    auto main_tabs = ftxui::Container::Tab({scene_main, scene_add}, &current_scene);
+    auto main_tabs = ftxui::Container::Tab({scene_main, scene_add, scene_account}, &current_scene);
 
     screen.Loop(main_tabs);
 
